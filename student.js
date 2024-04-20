@@ -2,7 +2,6 @@ const express = require("express")
 const studentRouter = express.Router()
 const pool = require("./db")
 
-// Öğrenci Ekleme
 studentRouter.post("/", async (req, res) => {
   const { name, email, deptid } = req.body
   try {
@@ -17,7 +16,6 @@ studentRouter.post("/", async (req, res) => {
       "SELECT * FROM Department WHERE id = $1",
       [deptid]
     )
-
     if (department.rows.length === 0) {
       return res.status(404).send("Bölüm bulunamadı.")
     }
@@ -25,6 +23,10 @@ studentRouter.post("/", async (req, res) => {
       "INSERT INTO Student (name, email, deptid) VALUES ($1, $2, $3) RETURNING *",
       [name, email, deptid]
     )
+
+    // Sayacı arttır
+    await pool.query("UPDATE Öğrenci_Sayaç SET sayaç = sayaç + 1")
+
     res.json(newStudent.rows[0])
   } catch (err) {
     console.error(err.message)
@@ -32,17 +34,23 @@ studentRouter.post("/", async (req, res) => {
   }
 })
 
-// Öğrenci Silme
 studentRouter.delete("/:id", async (req, res) => {
   const { id } = req.params
   try {
-    await pool.query("DELETE FROM Student WHERE id = $1", [id])
-    res.json("Öğrenci silindi.")
+    const delResult = await pool.query("DELETE FROM Student WHERE id = $1", [id])
+    if (delResult.rowCount > 0) {
+      // Sayacı azalt
+      await pool.query("UPDATE Öğrenci_Sayaç SET sayaç = sayaç - 1")
+      res.json("Öğrenci silindi.")
+    } else {
+      res.status(404).send("Silinecek öğrenci bulunamadı.")
+    }
   } catch (err) {
     console.error(err.message)
     res.status(500).send("Server Error")
   }
 })
+
 
 // Öğrenci Güncelleme
 studentRouter.put("/:id", async (req, res) => {
