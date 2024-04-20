@@ -10,3 +10,8 @@ CREATE TABLE Department (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
+CREATE TABLE Öğrenci_Sayaç (
+  sayaç INT DEFAULT 0
+);
+
+
