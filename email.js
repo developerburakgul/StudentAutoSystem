@@ -5,8 +5,8 @@ async function sendBackupEmail(attachmentPath) {
     host: 'smtp.gmail.com',
     service:'gmail',
     auth: {
-      user: 'nodej9551@gmail.com',
-      pass: "cxch stge mzdz vfma",
+      user: process.env.DB_USER,
+      pass: process.env.DB_PASSWORD,
     },
   });
 

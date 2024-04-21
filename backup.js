@@ -1,7 +1,7 @@
 require('dotenv').config();
 const cron = require('node-cron');
 const fs = require('fs');
-const { pool } = require('./db');  // Veritabanı bağlantı yapılandırmanız
+const pool = require("./db")  // Veritabanı bağlantı yapılandırmanız
 const { sendBackupEmail } = require('./email');  // E-posta gönderim servisi
 
 const weeklyReport= async function(){
